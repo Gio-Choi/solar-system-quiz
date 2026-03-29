@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solar System Quiz</title>
+  <style>
+    :root {
+      --space-900: #08111f;
+      --space-800: #10213a;
+      --space-700: #18355e;
+      --sun: #f4b35e;
+      --flare: #f47c48;
+      --ice: #cde7f0;
+      --card: rgba(10, 20, 38, 0.82);
+      --line: rgba(205, 231, 240, 0.18);
+      --correct: #64d7a4;
+      --wrong: #ff8b78;
+      --text: #f7f1e3;
+      --muted: #d9d6c6;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+    }
+
+    body {
+      font-family: "Trebuchet MS", "Avenir Next", "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 20% 20%, rgba(244, 179, 94, 0.25), transparent 24%),
+        radial-gradient(circle at 78% 18%, rgba(244, 124, 72, 0.18), transparent 18%),
+        radial-gradient(circle at 50% 90%, rgba(24, 53, 94, 0.6), transparent 34%),
+        linear-gradient(160deg, #02060f 0%, #071120 30%, #10213a 72%, #18355e 100%);
+      overflow-x: hidden;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    body::before {
+      background-image:
+        radial-gradient(circle at 15% 35%, rgba(255, 255, 255, 0.9) 0 1px, transparent 1.6px),
+        radial-gradient(circle at 84% 24%, rgba(255, 255, 255, 0.75) 0 1.2px, transparent 1.8px),
+        radial-gradient(circle at 68% 72%, rgba(255, 255, 255, 0.65) 0 1px, transparent 1.5px),
+        radial-gradient(circle at 32% 80%, rgba(255, 255, 255, 0.85) 0 1px, transparent 1.6px),
+        radial-gradient(circle at 56% 40%, rgba(244, 179, 94, 0.7) 0 1px, transparent 1.7px);
+      background-size: 320px 320px, 420px 420px, 500px 500px, 380px 380px, 260px 260px;
+      opacity: 0.65;
+      animation: drift 26s linear infinite;
+    }
+
+    body::after {
+      background:
+        radial-gradient(circle at center, rgba(244, 179, 94, 0.16), transparent 24%),
+        repeating-radial-gradient(circle at center, rgba(205, 231, 240, 0.08) 0 2px, transparent 2px 42px);
+      opacity: 0.25;
+      transform: scale(1.35);
+    }
+
+    @keyframes drift {
+      from {
+        transform: translateY(0);
+      }
+      to {
+        transform: translateY(24px);
+      }
+    }
+
+    @keyframes rise {
+      from {
+        opacity: 0;
+        transform: translateY(24px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .shell {
+      width: min(960px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 56px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero,
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+
+    .hero {
+      padding: 28px;
+      animation: rise 0.7s ease-out both;
+    }
+
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      color: var(--ice);
+      background: rgba(205, 231, 240, 0.08);
+      border: 1px solid rgba(205, 231, 240, 0.14);
+    }
+
+    .kicker::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--sun), var(--flare));
+      box-shadow: 0 0 18px rgba(244, 179, 94, 0.5);
+    }
+
+    h1 {
+      margin: 18px 0 12px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2.4rem, 5vw, 4.2rem);
+      line-height: 0.98;
+      letter-spacing: 0.02em;
+    }
+
+    .lead {
+      margin: 0;
+      max-width: 62ch;
+      font-size: 1.02rem;
+      line-height: 1.7;
+      color: var(--muted);
+    }
+
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 24px;
+    }
+
+    .stat {
+      padding: 16px 18px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(205, 231, 240, 0.12);
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 1.15rem;
+      color: var(--text);
+    }
+
+    .stat span {
+      display: block;
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+
+    .panel {
+      margin-top: 22px;
+      padding: 24px;
+      animation: rise 0.85s ease-out both;
+    }
+
+    .status-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .status {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 16px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .status strong {
+      color: var(--text);
+    }
+
+    .progress-track {
+      width: min(100%, 260px);
+      height: 12px;
+      border-radius: 999px;
+      background: rgba(205, 231, 240, 0.12);
+      overflow: hidden;
+      border: 1px solid rgba(205, 231, 240, 0.12);
+    }
+
+    .progress-fill {
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--sun), var(--flare));
+      box-shadow: 0 0 24px rgba(244, 179, 94, 0.45);
+      transition: width 220ms ease;
+    }
+
+    .question {
+      margin: 0;
+      font-size: clamp(1.4rem, 3vw, 2.05rem);
+      line-height: 1.3;
+    }
+
+    .answers {
+      display: grid;
+      gap: 14px;
+      margin-top: 22px;
+    }
+
+    .answer-btn,
+    .action-btn {
+      appearance: none;
+      border: 0;
+      cursor: pointer;
+      transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease, opacity 180ms ease;
+    }
+
+    .answer-btn {
+      text-align: left;
+      width: 100%;
+      padding: 16px 18px;
+      border-radius: 20px;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(205, 231, 240, 0.16);
+      font: inherit;
+    }
+
+    .answer-btn:hover:not(:disabled),
+    .answer-btn:focus-visible:not(:disabled),
+    .action-btn:hover,
+    .action-btn:focus-visible {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22);
+      outline: none;
+    }
+
+    .answer-btn:disabled {
+      cursor: default;
+    }
+
+    .answer-btn.correct {
+      background: rgba(100, 215, 164, 0.16);
+      border-color: rgba(100, 215, 164, 0.8);
+    }
+
+    .answer-btn.wrong {
+      background: rgba(255, 139, 120, 0.14);
+      border-color: rgba(255, 139, 120, 0.82);
+      opacity: 0.82;
+    }
+
+    .feedback {
+      min-height: 84px;
+      margin-top: 18px;
+      padding: 18px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(205, 231, 240, 0.12);
+      line-height: 1.65;
+      color: var(--muted);
+    }
+
+    .feedback strong {
+      color: var(--text);
+    }
+
+    .feedback.correct {
+      border-color: rgba(100, 215, 164, 0.45);
+    }
+
+    .feedback.wrong {
+      border-color: rgba(255, 139, 120, 0.45);
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      padding: 14px 20px;
+      border-radius: 999px;
+      font: inherit;
+      color: #08111f;
+      background: linear-gradient(135deg, var(--sun), var(--flare));
+      min-width: 152px;
+    }
+
+    .action-btn.secondary {
+      color: var(--text);
+      background: rgba(205, 231, 240, 0.1);
+      border: 1px solid rgba(205, 231, 240, 0.14);
+    }
+
+    .action-btn[hidden] {
+      display: none;
+    }
+
+    .results {
+      display: none;
+      margin-top: 24px;
+      padding: 24px;
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at top right, rgba(244, 179, 94, 0.24), transparent 35%),
+        rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(205, 231, 240, 0.16);
+    }
+
+    .results.show {
+      display: block;
+      animation: rise 0.4s ease-out both;
+    }
+
+    .results h2 {
+      margin: 0 0 8px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1.9rem, 3vw, 2.4rem);
+    }
+
+    .results p {
+      margin: 8px 0;
+      line-height: 1.7;
+      color: var(--muted);
+    }
+
+    .badge-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    .badge {
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(205, 231, 240, 0.1);
+      border: 1px solid rgba(205, 231, 240, 0.14);
+      color: var(--text);
+      font-size: 0.94rem;
+    }
+
+    .footer-note {
+      margin-top: 18px;
+      color: rgba(247, 241, 227, 0.72);
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 720px) {
+      .shell {
+        width: min(100% - 20px, 960px);
+        padding-top: 18px;
+      }
+
+      .hero,
+      .panel {
+        border-radius: 22px;
+      }
+
+      .hero,
+      .panel,
+      .results {
+        padding: 20px;
+      }
+
+      .meta {
+        grid-template-columns: 1fr;
+      }
+
+      .status-row {
+        align-items: flex-start;
+      }
+
+      .progress-track {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero" aria-labelledby="page-title">
+      <div class="kicker">Planetary Challenge</div>
+      <h1 id="page-title">Solar System Quiz</h1>
+      <p class="lead">
+        Test your space knowledge across planets, moons, and orbit facts. Read each question, choose one answer, and use the feedback panel to learn something new before moving on.
+      </p>
+      <div class="meta" aria-label="Quiz instructions">
+        <div class="stat">
+          <strong>8 questions</strong>
+          <span>A compact round covering the major solar system basics.</span>
+        </div>
+        <div class="stat">
+          <strong>One tap answers</strong>
+          <span>Select an option to lock it in and reveal an explanation.</span>
+        </div>
+        <div class="stat">
+          <strong>Replay anytime</strong>
+          <span>Restart for a reshuffled question order and fresh score.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" aria-live="polite">
+      <div class="status-row">
+        <div class="status">
+          <span>Question <strong id="question-number">1</strong>/<span id="total-questions">8</span></span>
+          <span>Score <strong id="score">0</strong></span>
+          <span>Best <strong id="best-score">0/8</strong></span>
+        </div>
+        <div class="progress-track" aria-hidden="true">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+      </div>
+
+      <h2 class="question" id="question-text">Loading question...</h2>
+
+      <div class="answers" id="answers" role="list"></div>
+
+      <div class="feedback" id="feedback">
+        Choose an answer to see whether you're right and to unlock a short solar system fact.
+      </div>
+
+      <div class="controls">
+        <button class="action-btn" id="next-btn" hidden>Next Question</button>
+        <button class="action-btn secondary" id="restart-btn">Restart Quiz</button>
+      </div>
+
+      <section class="results" id="results" aria-live="polite">
+        <h2 id="results-title">Mission complete.</h2>
+        <p id="results-summary"></p>
+        <div class="badge-row">
+          <div class="badge" id="final-score-badge">Score: 0/8</div>
+          <div class="badge" id="accuracy-badge">Accuracy: 0%</div>
+          <div class="badge" id="best-badge">Best: 0/8</div>
+        </div>
+        <p class="footer-note">
+          Want another round? Restart to shuffle the questions and try for a perfect score.
+        </p>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const questionBank = [
+      {
+        question: "Which planet is closest to the Sun?",
+        answers: ["Venus", "Mercury", "Mars", "Earth"],
+        correct: "Mercury",
+        fact: "Mercury is the innermost planet and completes one orbit around the Sun in about 88 Earth days."
+      },
+      {
+        question: "Which planet is known for its large and bright ring system?",
+        answers: ["Jupiter", "Saturn", "Uranus", "Neptune"],
+        correct: "Saturn",
+        fact: "All four gas giants have rings, but Saturn's icy ring system is by far the most visible from Earth."
+      },
+      {
+        question: "What is the largest planet in our solar system?",
+        answers: ["Saturn", "Neptune", "Jupiter", "Earth"],
+        correct: "Jupiter",
+        fact: "Jupiter is so large that more than 1,300 Earths could fit inside it by volume."
+      },
+      {
+        question: "Which planet is famous for the Great Red Spot?",
+        answers: ["Mars", "Jupiter", "Venus", "Uranus"],
+        correct: "Jupiter",
+        fact: "The Great Red Spot is a massive storm on Jupiter that has lasted for centuries."
+      },
+      {
+        question: "Which planet rotates on its side compared with most other planets?",
+        answers: ["Uranus", "Mars", "Mercury", "Saturn"],
+        correct: "Uranus",
+        fact: "Uranus has an axial tilt of about 98 degrees, which makes its seasons especially unusual."
+      },
+      {
+        question: "Which dwarf planet lies in the Kuiper Belt and was once classified as the ninth planet?",
+        answers: ["Ceres", "Eris", "Haumea", "Pluto"],
+        correct: "Pluto",
+        fact: "Pluto was reclassified as a dwarf planet in 2006 after astronomers refined the definition of a planet."
+      },
+      {
+        question: "Which planet is often called Earth's sister planet because of its similar size?",
+        answers: ["Mars", "Venus", "Mercury", "Neptune"],
+        correct: "Venus",
+        fact: "Venus is close to Earth in size, but its thick atmosphere creates a runaway greenhouse effect."
+      },
+      {
+        question: "Which planet is farthest from the Sun?",
+        answers: ["Saturn", "Uranus", "Mars", "Neptune"],
+        correct: "Neptune",
+        fact: "Neptune is the most distant major planet from the Sun and receives very little solar energy."
+      }
+    ];
+
+    const questionText = document.getElementById("question-text");
+    const answersWrap = document.getElementById("answers");
+    const feedback = document.getElementById("feedback");
+    const nextBtn = document.getElementById("next-btn");
+    const restartBtn = document.getElementById("restart-btn");
+    const questionNumber = document.getElementById("question-number");
+    const totalQuestions = document.getElementById("total-questions");
+    const scoreValue = document.getElementById("score");
+    const progressFill = document.getElementById("progress-fill");
+    const results = document.getElementById("results");
+    const resultsTitle = document.getElementById("results-title");
+    const resultsSummary = document.getElementById("results-summary");
+    const finalScoreBadge = document.getElementById("final-score-badge");
+    const accuracyBadge = document.getElementById("accuracy-badge");
+    const bestScoreText = document.getElementById("best-score");
+    const bestBadge = document.getElementById("best-badge");
+
+    const TOTAL_QUESTIONS = questionBank.length;
+    const BEST_SCORE_KEY = "solar-system-quiz-best-score";
+
+    let questions = [];
+    let currentIndex = 0;
+    let score = 0;
+    let locked = false;
+    let bestScore = Number(localStorage.getItem(BEST_SCORE_KEY)) || 0;
+
+    totalQuestions.textContent = TOTAL_QUESTIONS;
+
+    function shuffle(array) {
+      const clone = [...array];
+      for (let i = clone.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [clone[i], clone[j]] = [clone[j], clone[i]];
+      }
+      return clone;
+    }
+
+    function updateBestScore() {
+      bestScoreText.textContent = `${bestScore}/${TOTAL_QUESTIONS}`;
+      bestBadge.textContent = `Best: ${bestScore}/${TOTAL_QUESTIONS}`;
+    }
+
+    function setFeedback(message, state) {
+      feedback.className = "feedback";
+      if (state) {
+        feedback.classList.add(state);
+      }
+      feedback.innerHTML = message;
+    }
+
+    function renderQuestion() {
+      const currentQuestion = questions[currentIndex];
+      locked = false;
+      results.classList.remove("show");
+      questionNumber.textContent = currentIndex + 1;
+      scoreValue.textContent = score;
+      progressFill.style.width = `${(currentIndex / TOTAL_QUESTIONS) * 100}%`;
+      questionText.textContent = currentQuestion.question;
+      nextBtn.hidden = true;
+      answersWrap.innerHTML = "";
+      setFeedback("Choose an answer to see whether you're right and to unlock a short solar system fact.");
+
+      currentQuestion.answers.forEach((answer) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "answer-btn";
+        button.textContent = answer;
+        button.addEventListener("click", () => handleAnswer(button, answer));
+        answersWrap.appendChild(button);
+      });
+    }
+
+    function handleAnswer(button, answer) {
+      if (locked) {
+        return;
+      }
+
+      locked = true;
+      const currentQuestion = questions[currentIndex];
+      const buttons = [...answersWrap.querySelectorAll(".answer-btn")];
+      const isCorrect = answer === currentQuestion.correct;
+
+      buttons.forEach((btn) => {
+        const isRightChoice = btn.textContent === currentQuestion.correct;
+        btn.disabled = true;
+        if (isRightChoice) {
+          btn.classList.add("correct");
+        } else if (btn === button && !isCorrect) {
+          btn.classList.add("wrong");
+        }
+      });
+
+      if (isCorrect) {
+        score += 1;
+        scoreValue.textContent = score;
+        setFeedback(`<strong>Correct.</strong> ${currentQuestion.fact}`, "correct");
+      } else {
+        setFeedback(`<strong>Not quite.</strong> The correct answer is <strong>${currentQuestion.correct}</strong>. ${currentQuestion.fact}`, "wrong");
+      }
+
+      nextBtn.hidden = false;
+      nextBtn.textContent = currentIndex === TOTAL_QUESTIONS - 1 ? "See Results" : "Next Question";
+    }
+
+    function showResults() {
+      progressFill.style.width = "100%";
+      questionText.textContent = "Quiz complete.";
+      answersWrap.innerHTML = "";
+      nextBtn.hidden = true;
+
+      if (score > bestScore) {
+        bestScore = score;
+        localStorage.setItem(BEST_SCORE_KEY, String(bestScore));
+      }
+
+      updateBestScore();
+
+      const accuracy = Math.round((score / TOTAL_QUESTIONS) * 100);
+      let title = "Mission complete.";
+      let summary = "You made a steady pass through the solar system basics.";
+
+      if (score === TOTAL_QUESTIONS) {
+        title = "Perfect orbit.";
+        summary = "You answered every question correctly and navigated the full quiz without a miss.";
+      } else if (score >= TOTAL_QUESTIONS - 2) {
+        title = "Strong trajectory.";
+        summary = "You know your planets well. One more run could turn this into a perfect score.";
+      } else if (score <= 3) {
+        title = "Launch another round.";
+        summary = "You have the basics in motion, but a replay will help lock in more solar system facts.";
+      }
+
+      resultsTitle.textContent = title;
+      resultsSummary.textContent = summary;
+      finalScoreBadge.textContent = `Score: ${score}/${TOTAL_QUESTIONS}`;
+      accuracyBadge.textContent = `Accuracy: ${accuracy}%`;
+      bestBadge.textContent = `Best: ${bestScore}/${TOTAL_QUESTIONS}`;
+      results.classList.add("show");
+
+      setFeedback("Restart whenever you're ready for a reshuffled question set.");
+    }
+
+    function nextQuestion() {
+      if (currentIndex === TOTAL_QUESTIONS - 1) {
+        showResults();
+        return;
+      }
+
+      currentIndex += 1;
+      renderQuestion();
+    }
+
+    function startQuiz() {
+      questions = shuffle(questionBank).map((item) => ({
+        ...item,
+        answers: shuffle(item.answers)
+      }));
+      currentIndex = 0;
+      score = 0;
+      scoreValue.textContent = score;
+      updateBestScore();
+      renderQuestion();
+    }
+
+    nextBtn.addEventListener("click", nextQuestion);
+    restartBtn.addEventListener("click", startQuiz);
+
+    updateBestScore();
+    startQuiz();
+  </script>
+</body>
+</html>
